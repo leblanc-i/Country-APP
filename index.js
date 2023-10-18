@@ -21,6 +21,7 @@ const fetchCountry = async () => {
 const countryDisplay = () => {
     result.innerHTML = countriesData
         .filter((country) => country.translations.fra.common.toLowerCase().includes(search.value.toLowerCase()))
+        .slice(0, range.value)
         .map((country) => {
             return`
                 <div class="card">
@@ -33,9 +34,12 @@ const countryDisplay = () => {
         }).join("");
 }
 window.addEventListener("load", fetchCountry);
-search.addEventListener("input", countryDisplay);
 // 5 - Récupérer ce qui est tapé dans l'input et filtrer (avant le map) les données
-
+search.addEventListener("input", countryDisplay);
 // 6 - Avec la méthode Slice gérer le nombre de pays affichés (inputRange.value)
+range.addEventListener("input", () => {
+    rangeDisplay.textContent = range.value;
+    countryDisplay();
+})
 
 // 7 - Gérer les 3 boutons pour trier (méthode sort()) les pays
