@@ -3,8 +3,10 @@ const search = document.getElementById("inputSearch");
 const range = document.getElementById("inputRange");
 const rangeDisplay = document.getElementById("rangeValue");
 const result = document.querySelector(".countries-container");
+const btnTri = document.querySelectorAll(".btnSort");
 
 let countriesData = [];
+let countrySort = "alpha";
 
 // 2 - Créer une fonction pour "fetcher" les données, afficher les données dans la console.
 const fetchCountry = async () => {
@@ -12,7 +14,6 @@ const fetchCountry = async () => {
         .then((res) => res.json())
         .then((data) => {
             countriesData = data;
-            console.log(countriesData);
         })
         countryDisplay();
 }
@@ -21,6 +22,15 @@ const fetchCountry = async () => {
 const countryDisplay = () => {
     result.innerHTML = countriesData
         .filter((country) => country.translations.fra.common.toLowerCase().includes(search.value.toLowerCase()))
+        .sort((a, b) => {
+            if (countrySort === "maxToMin") {
+                return b.population - a.population;
+            } else if (countrySort === "minToMax") {
+                return a.population - b.population;
+            } else if (countrySort === "alpha") {
+                return (a.translations.fra.common.localeCompare(b.translations.fra.common));
+            }
+        })
         .slice(0, range.value)
         .map((country) => {
             return`
@@ -28,7 +38,7 @@ const countryDisplay = () => {
                     <img src=${country.flags.svg}>
                     <h2>${country.translations.fra.common}</h2>
                     <h4>${country.capital}</h4>
-                    <p>${country.population}</p>
+                    <p>${country.population.toLocaleString()}</p>
                 </div>
             `
         }).join("");
@@ -41,5 +51,10 @@ range.addEventListener("input", () => {
     rangeDisplay.textContent = range.value;
     countryDisplay();
 })
-
 // 7 - Gérer les 3 boutons pour trier (méthode sort()) les pays
+btnTri.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        countrySort = btn.id;
+        countryDisplay();
+    })
+});
